@@ -15,9 +15,44 @@ end
 class Mastermind
   @@possible_numbers = [1,2,3,4,5,6]
   def initialize
-    generate_code
-    play_mastermind
+    propmt_user
   end
+
+  def propmt_user
+    selection = ""
+    puts "Do you want to generate the code? (Y/N)"
+    until selection == "Y" || selection == "N" do
+      puts "Please enter (Y)es or (N)o"
+      selection = gets.chomp.upcase.to_s
+    end
+    if selection == "Y"
+      user_generate_code
+      ai_solve
+    elsif selection == "N"
+      generate_code
+      play_mastermind
+    end
+  end
+
+  def ai_solve
+    turns = 12
+    while turns > 0
+      p "Computer has #{turns} guesses remaining!"
+      turns -= 1
+      ai_guess
+    end
+    if turns == 0
+      p "Computer has lost, the code was #{$code.code}"
+    end
+  end
+
+  def ai_guess
+    computer_guess = []
+    4.times {computer_guess << @@possible_numbers[rand(0..5)]}
+    p computer_guess
+    check_computer_win(computer_guess)
+  end
+
 
   def generate_code
     generated_code = []
@@ -25,6 +60,17 @@ class Mastermind
     $code = Code.new(generated_code)
     p $code.code
     puts ""
+  end
+
+  def user_generate_code
+    generated_code = []
+    until (1111..6666).include?(generated_code) do
+      puts "Enter your 4 digit code"
+      generated_code = gets.chomp.to_i
+    end
+    generated_code = generated_code.to_s.chars.map(&:to_i)
+    $code = Code.new(generated_code)
+    p $code.code
   end
 
   def player_guess
@@ -40,6 +86,16 @@ class Mastermind
   end
 
   def check_win(guess)
+    if guess == $code.code
+      p guess
+      p $code.code
+      abort("You win!")
+    else
+      give_feedback(guess)
+    end
+  end
+
+  def check_computer_win(guess)
     if guess == $code.code
       p guess
       p $code.code
