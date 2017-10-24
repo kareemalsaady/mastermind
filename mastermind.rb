@@ -99,7 +99,7 @@ class Mastermind
     if guess == $code.code
       p guess
       p $code.code
-      abort("You win!")
+      abort("Computer wins!")
     else
       give_feedback(guess)
     end
